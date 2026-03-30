@@ -1,23 +1,25 @@
-output "public_subnet_1a" {
-  value = aws_subnet.eks_pub_subnet_1a.id
+#Subnets Output
+output "public_subnet_ids" {
+  value = {
+    for key, subnet in aws_subnet.subnets :
+    key => subnet.id
+    if var.subnets[key].type == "public"
+  }
 }
 
-output "public_subnet_1b" {
-  value = aws_subnet.eks_pub_subnet_1b.id
+output "private_subnet_ids" {
+  value = {
+    for key, subnet in aws_subnet.subnets :
+    key => subnet.id
+    if var.subnets[key].type == "private"
+  }
 }
 
-output "private_subnet_1a" {
-  value = aws_subnet.eks_priv_subnet_1a.id
-}
-
-output "private_subnet_1b" {
-  value = aws_subnet.eks_priv_subnet_1b.id
-}
-
+#VPC Output
 output "vpc_id" {
-  value = aws_vpc.eks_vpc.id
+  value = aws_vpc.vpc.id
 }
 
 output "vpc_cidr" {
-  value = aws_vpc.eks_vpc.cidr_block
+  value = aws_vpc.vpc.cidr_block
 }
