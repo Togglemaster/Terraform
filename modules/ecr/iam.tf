@@ -1,3 +1,6 @@
+#============================================
+# IAM role for ECR access
+#============================================
 resource "aws_iam_role" "ecr_role" {
   name = "ecr-role-${var.environment}"
 
@@ -21,6 +24,10 @@ resource "aws_iam_role" "ecr_role" {
   })
 }
 
+
+#============================================
+# IAM policy for ECR access
+#============================================
 resource "aws_iam_role_policy" "ecr_policy" {
   name = "ecr-policy-${var.environment}"
   role = aws_iam_role.ecr_role.id

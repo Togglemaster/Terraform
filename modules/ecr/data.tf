@@ -1,3 +1,6 @@
+#============================================
+# Data sources to get cluster info
+#============================================
 data "aws_eks_cluster" "cluster" {
   name = var.cluster_name
 }
