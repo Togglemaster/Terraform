@@ -7,7 +7,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   version  = "1.31"                            # K8S version
 
   vpc_config {
-    subnet_ids = values(var.public_subnet_ids)
+    subnet_ids              = values(var.public_subnet_ids)
     endpoint_private_access = true # Internal access endpoint
     endpoint_public_access  = true # External access endpoint
   }
