@@ -45,5 +45,9 @@ variable "rds_password" {
   description = "Master password"
   type        = string
   sensitive   = true
-  default     = "testedbteste"
+}
+
+variable "rds_username" {
+  description = "Master username"
+  type        = string
 }

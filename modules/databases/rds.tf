@@ -42,7 +42,7 @@ module "rds_postgres" {
   allocated_storage = 20
 
   db_name  = "togglemaster_${var.environment}"
-  username = "togglemaster_admin"
+  username = var.rds_username
   password = var.rds_password
   port     = 5432
 
