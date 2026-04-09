@@ -99,12 +99,3 @@ variable "evaluation_db_endpoint" {
   description = "Evaluation service database endpoint"
   type        = string
 }
-
-# =============================================================================
-# VARIÁVEIS DO MÓDULO SECRETS MANAGER
-# =============================================================================
-variable "app_names" {
-  description = "App names for Secrets Manager secrets"
-  type        = list(string)
-  default     = ["auth-service", "flag-service", "targeting-service"]
-}

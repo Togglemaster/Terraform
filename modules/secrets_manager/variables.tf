@@ -1,62 +1,78 @@
 # =============================================================================
-# VARIÁVEIS GLOBAIS DO PROJETO
+# VARIÁVEIS GLOBAIS
 # =============================================================================
+
 variable "aws_region" {
   type        = string
-  description = "AWS Region for resources deployment"
+  description = "AWS region (usado no endpoint da Lambda de rotação)"
 }
 
 variable "project_name" {
   type        = string
-  description = "Project name to identify resources"
+  description = "Nome do projeto para identificação dos recursos"
 }
 
 variable "environment" {
   type        = string
-  description = "Environment name"
+  description = "Nome do ambiente (Production, Staging, etc)"
 }
 
 variable "tags" {
-  type        = map(any)
-  description = "Tags for resources"
+  type        = map(string)
+  description = "Tags aplicadas aos recursos"
+  default     = {}
 }
 
-#============================================
-# Secrets Manager Variables
-#============================================
-
-variable "app_names" {
-  description = "App names"
-  type        = list(string)
-}
-
-variable "private_subnet_ids" {
-  description = "Private subnet IDs"
-  type        = list(string)
-}
-
-variable "rds_security_group_id" {
-  description = "RDS security group ID"
-  type        = string
-}
+# =============================================================================
+# RDS
+# =============================================================================
 
 variable "rds_address" {
-  description = "RDS instance hostname"
   type        = string
+  description = "Hostname do RDS (sem porta)"
 }
 
 variable "rds_port" {
-  description = "RDS instance port"
   type        = number
+  description = "Porta do RDS"
 }
 
 variable "rds_db_name" {
-  description = "RDS database name"
   type        = string
+  description = "Nome do banco de dados no RDS"
+}
+
+variable "rds_username" {
+  type        = string
+  description = "Usuário do banco de dados (mesmo para todos os serviços)"
+}
+
+# =============================================================================
+# REDE (necessária apenas para a Lambda de rotação)
+# =============================================================================
+
+variable "private_subnet_ids" {
+  type        = list(string)
+  description = "IDs das subnets privadas onde a Lambda de rotação será executada"
+}
+
+variable "rds_security_group_id" {
+  type        = string
+  description = "ID do security group do RDS (atribuído à Lambda de rotação)"
+}
+
+# =============================================================================
+# CONFIGURAÇÃO DOS SECRETS
+# =============================================================================
+
+variable "app_names" {
+  type        = list(string)
+  description = "Serviços que receberão secrets de banco de dados"
+  default     = ["auth-service", "flag-service", "targeting-service"]
 }
 
 variable "enable_rotation" {
-  description = "Enable automatic secret rotation via Lambda"
   type        = bool
+  description = "Habilita rotação automática de senhas via Lambda"
   default     = false
 }
