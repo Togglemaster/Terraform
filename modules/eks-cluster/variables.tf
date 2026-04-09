@@ -1,13 +1,22 @@
-# Variable for the CIDR BLOCK to be used for the VPC
+#============================================
+# Global Variables
+#============================================
 variable "project_name" {
+  description = "Project name for resource naming"
   type        = string
-  description = "Project name to be used to name the resources (name tag)"
+}
+
+variable "environment" {
+  description = "Environment (Homologação, Produção, etc)"
+  type        = string
 }
 
 variable "tags" {
-  type        = map(any)
-  description = "Tags to be added to AWS resources"
+  description = "Tags for the RDS instance"
+  type        = map(string)
+  default     = {}
 }
+
 
 # Public subnets to create the cluster. From Network Module
 variable "public_subnet_ids" {
