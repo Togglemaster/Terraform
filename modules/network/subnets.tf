@@ -60,11 +60,8 @@ resource "aws_subnet" "subnets" {
 
   tags = merge(
     var.tags,
-    {
-      Name = "${var.project_name}-${each.key}-subnet"
-
-      "kubernetes.io/role/elb"          = each.value.type == "public" ? "1" : null
-      "kubernetes.io/role/internal-elb" = each.value.type == "private" ? "1" : null
-    }
+    { Name = "${var.project_name}-${each.key}-subnet" },
+    each.value.type == "public" ? { "kubernetes.io/role/elb" = "1" } : {},
+    each.value.type == "private" ? { "kubernetes.io/role/internal-elb" = "1" } : {}
   )
 }

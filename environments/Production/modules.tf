@@ -18,6 +18,17 @@ module "ecr" {
   cluster_name    = module.eks.eks_cluster_name
 }
 
+module "nodegroup" {
+  source = "../../modules/eks-nodegroup"
+
+  project_name       = var.project_name
+  environment        = var.environment
+  tags               = var.tags
+  cluster_name       = module.eks.eks_cluster_name
+  private_subnet_ids = module.vpc.private_subnet_ids
+  eks_cluster_sg     = module.eks.cluster_sg
+}
+
 module "rds" {
   source = "../../modules/databases"
 

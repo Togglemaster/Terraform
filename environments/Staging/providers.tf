@@ -5,9 +5,17 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 6.28.0"
     }
-    kubernetes = {                     #kubernetes
-      source  = "hashicorp/kubernetes" #kubernetes
-      version = "3.0.1"                #kubernetes
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "3.0.1"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.5.0"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = ">= 4.0.0"
     }
   }
 }
@@ -16,12 +24,9 @@ provider "aws" {
   region = var.aws_region
 }
 
-#Kubernetes provider to exec a job
 provider "kubernetes" {
-  host = module.eks.eks_cluster_endpoint
-  cluster_ca_certificate = base64decode(
-    module.eks.cluster_authentic
-  )
+  host                   = module.eks.eks_cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.certificate_authority)
 
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"

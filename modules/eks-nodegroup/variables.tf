@@ -7,7 +7,7 @@ variable "project_name" {
 }
 
 variable "environment" {
-  description = "Environment (Homologação, Produção, etc)"
+  description = "Environment (Production, Staging, etc)"
   type        = string
 }
 
@@ -16,30 +16,20 @@ variable "tags" {
   description = "Tags to be added to AWS resources"
 }
 
-variable "key-pair" {
-  type        = string
-  description = "Key-Pair to the EC2 from MNG"
-}
-
-
 #============================================
 # EKS Node Group Variables
 #============================================
-# Cluster name
 variable "cluster_name" {
   type        = string
-  description = "Cluster name to be used for integrate mng to cluster"
+  description = "Cluster name to integrate node group with the cluster"
 }
 
-# Private subnets to create the MNG. From Network Module
 variable "private_subnet_ids" {
   type        = map(string)
-  description = "Subnet IDs to create EKS manage node group"
+  description = "Private subnet IDs where node group instances will run"
 }
 
-# EKS Node Group Security Group
 variable "eks_cluster_sg" {
   type        = string
-  description = "Cluster SG to ingress rules"
+  description = "Cluster security group ID for ingress rules"
 }
-

@@ -1,20 +1,5 @@
 #============================================
-# ECR Variables
-#============================================
-variable "repository_name" {
-  description = "List of ECR repository names"
-  type        = list(string)
-  default = [
-    "auth-service",
-    "flag-service",
-    "targeting-service",
-    "evaluation-service",
-    "analytics-service"
-  ]
-}
-
-#============================================
-# ECR module
+# ECR Module
 #============================================
 module "ecr" {
   source  = "terraform-aws-modules/ecr/aws"
@@ -30,7 +15,6 @@ module "ecr" {
 
   # Lifecycle policy
   repository_lifecycle_policy = jsonencode({
-    # keep only the last 10 images
     rules = [
       {
         rulePriority = 1,
@@ -41,11 +25,8 @@ module "ecr" {
           countType     = "imageCountMoreThan",
           countNumber   = 10
         },
-        action = {
-          type = "expire"
-        }
+        action = { type = "expire" }
       },
-      # Remove untagged images after 7 days
       {
         rulePriority = 2,
         description  = "Remove untagged images after 7 days",
@@ -63,7 +44,7 @@ module "ecr" {
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}_${var.environment}_sqs"
+      Name = "${var.project_name}_${var.environment}_ecr"
     }
   )
 }
