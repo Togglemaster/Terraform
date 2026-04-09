@@ -2,7 +2,7 @@
 # Role to EKS operate AWS resources
 #============================================
 resource "aws_iam_role" "eks_mng_role" {
-  name = "${var.project_name}-mng-role"
+  name = "${var.project_name}-${var.environment}-mng-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -21,7 +21,7 @@ resource "aws_iam_role" "eks_mng_role" {
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}-mng-role"
+      Name = "${var.project_name}-${var.environment}-mng-role"
     }
   )
 }

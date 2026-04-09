@@ -18,6 +18,17 @@ module "ecr" {
   cluster_name    = module.eks.eks_cluster_name
 }
 
+module "nodegroup" {
+  source = "../../modules/eks-nodegroup"
+
+  project_name       = var.project_name
+  environment        = var.environment
+  tags               = var.tags
+  cluster_name       = module.eks.eks_cluster_name
+  private_subnet_ids = module.vpc.private_subnet_ids
+  eks_cluster_sg     = module.eks.cluster_sg
+}
+
 module "rds" {
   source = "../../modules/databases"
 
@@ -54,4 +65,19 @@ module "kubernetes" {
   db_targeting_endpoint  = var.db_targeting_endpoint
   evaluation_db_endpoint = var.evaluation_db_endpoint
   dynamodb_table_name    = var.dynamodb_table_name
+}
+
+module "secrets_manager" {
+  source = "../../modules/secrets_manager"
+
+  aws_region            = var.aws_region
+  project_name          = var.project_name
+  environment           = var.environment
+  tags                  = var.tags
+  private_subnet_ids    = module.vpc.private_subnet_ids
+  rds_security_group_id = module.rds.rds_security_group_id
+  rds_address           = module.rds.rds_instance_address
+  rds_port              = module.rds.rds_instance_port
+  rds_db_name           = module.rds.rds_db_name
+  rds_username          = var.rds_username
 }

@@ -2,7 +2,7 @@
 # Create a VPC for the EKS Cluster
 #============================================
 
-resource "aws_vpc" "main_vpc" {
+resource "aws_vpc" "vpc" {
   cidr_block           = var.cidr_block # Coming from variables.tf
   enable_dns_support   = true           # Needed for EKS to Work
   enable_dns_hostnames = true           # Needed for EKS to Work

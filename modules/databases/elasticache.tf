@@ -17,7 +17,7 @@ module "elasticache" {
   apply_immediately  = true
 
   # Security group
-  vpc_id = vpc.vpc_id
+  vpc_id = var.vpc_id
   security_group_rules = {
     ingress_vpc = {
       # Default type is `ingress`

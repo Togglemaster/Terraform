@@ -1,5 +1,11 @@
-# Deploya a Lambda de rotação direto do Serverless Application Repository
+# ============================================================
+# Lambda de rotação via Serverless Application Repository
+# Criada apenas quando enable_rotation = true
+# ============================================================
+
 resource "aws_serverlessapplicationrepository_cloudformation_stack" "rds_rotation" {
+  count = var.enable_rotation ? 1 : 0
+
   name             = "${var.project_name}-${var.environment}-rds-rotation"
   application_id   = "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSPostgreSQLRotationSingleUser"
   semantic_version = "1.1.367"
@@ -10,9 +16,9 @@ resource "aws_serverlessapplicationrepository_cloudformation_stack" "rds_rotatio
   ]
 
   parameters = {
-    functionName     = "${var.project_name}-${var.environment}-rds-rotation"
-    endpoint         = "https://secretsmanager.${var.aws_region}.amazonaws.com"
-    vpcSubnetIds     = join(",", var.private_subnet_ids)
+    functionName        = "${var.project_name}-${var.environment}-rds-rotation"
+    endpoint            = "https://secretsmanager.${var.aws_region}.amazonaws.com"
+    vpcSubnetIds        = join(",", var.private_subnet_ids)
     vpcSecurityGroupIds = var.rds_security_group_id
   }
 }
