@@ -36,15 +36,13 @@ resource "aws_secretsmanager_secret_version" "app_db_secrets" {
 
   secret_string = jsonencode({
     engine   = "postgres"
-    host     = aws_db_instance.main.address
-    port     = aws_db_instance.main.port
-    dbname   = aws_db_instance.main.db_name
+    host     = var.rds_address
+    port     = var.rds_port
+    dbname   = var.rds_db_name
     username = "${each.key}_user"
     password = random_password.app_passwords[each.key].result
   })
 
-  # Recria o secret se a instância RDS mudar
-  depends_on = [aws_db_instance.main]
 }
 
 # ============================================================
@@ -52,7 +50,7 @@ resource "aws_secretsmanager_secret_version" "app_db_secrets" {
 # ============================================================
 
 resource "aws_secretsmanager_secret_rotation" "app_db_secrets" {
-  for_each = false ? toset(var.app_names) : toset([])
+  for_each = var.enable_rotation ? toset(var.app_names) : toset([])
 
   secret_id           = aws_secretsmanager_secret.app_db_secrets[each.key].id
   rotation_lambda_arn = aws_serverlessapplicationrepository_cloudformation_stack.rds_rotation.outputs["LambdaFunctionArn"]

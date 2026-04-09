@@ -69,7 +69,6 @@ resource "kubernetes_secret_v1" "targeting_db_secret_host" {
 #============================================
 # Adding kubernetes secret host url endpoint - Evaluation-Service
 #============================================
-data "aws_region" "current" {}
 resource "kubernetes_secret_v1" "evaluation_db_endpoint" {
   depends_on = [
     kubernetes_namespace_v1.services

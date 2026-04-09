@@ -55,3 +55,18 @@ module "kubernetes" {
   evaluation_db_endpoint = var.evaluation_db_endpoint
   dynamodb_table_name    = var.dynamodb_table_name
 }
+
+module "secrets_manager" {
+  source = "../../modules/secrets_manager"
+
+  aws_region            = var.aws_region
+  project_name          = var.project_name
+  environment           = var.environment
+  tags                  = var.tags
+  app_names             = var.app_names
+  private_subnet_ids    = module.vpc.private_subnet_ids
+  rds_security_group_id = module.rds.rds_security_group_id
+  rds_address           = module.rds.rds_instance_address
+  rds_port              = module.rds.rds_instance_port
+  rds_db_name           = module.rds.rds_db_name
+}

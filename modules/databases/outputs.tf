@@ -3,12 +3,27 @@
 #============================================
 output "rds_instance_endpoint" {
   description = "RDS instance endpoint"
-  value       = module.db.db_instance_endpoint
+  value       = module.rds_postgres.db_instance_endpoint
 }
 
 output "rds_instance_id" {
   description = "RDS instance ID"
-  value       = module.db.db_instance_resource_id
+  value       = module.rds_postgres.db_instance_resource_id
+}
+
+output "rds_instance_address" {
+  description = "RDS instance hostname"
+  value       = module.rds_postgres.db_instance_address
+}
+
+output "rds_instance_port" {
+  description = "RDS instance port"
+  value       = module.rds_postgres.db_instance_port
+}
+
+output "rds_db_name" {
+  description = "RDS database name"
+  value       = module.rds_postgres.db_instance_name
 }
 
 output "rds_security_group_id" {

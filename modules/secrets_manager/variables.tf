@@ -39,3 +39,24 @@ variable "rds_security_group_id" {
   description = "RDS security group ID"
   type        = string
 }
+
+variable "rds_address" {
+  description = "RDS instance hostname"
+  type        = string
+}
+
+variable "rds_port" {
+  description = "RDS instance port"
+  type        = number
+}
+
+variable "rds_db_name" {
+  description = "RDS database name"
+  type        = string
+}
+
+variable "enable_rotation" {
+  description = "Enable automatic secret rotation via Lambda"
+  type        = bool
+  default     = false
+}
