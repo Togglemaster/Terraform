@@ -11,6 +11,10 @@ output "rds_instance_id" {
   value       = module.db.db_instance_resource_id
 }
 
+output "rds_security_group_id" {
+  description = "RDS security group ID"
+  value       = aws_security_group.rds_security_group.id
+}
 
 #============================================
 # DynamoDB Outputs

@@ -1,0 +1,41 @@
+name: Terraform Apply Production
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  TF_VERSION: 1.6.1
+  WORK_DIR: environments/Production/
+
+jobs:
+  Terraform-Apply-PRD:
+    name: Terraform-Apply-Production
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Apply
+        working-directory: ${{ env.WORK_DIR }}
+        env:
+          TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
+        run: |
+          terraform init -reconfigure
+          terraform apply -auto-approve

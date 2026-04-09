@@ -1,0 +1,135 @@
+name: Terraform Init
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+env:
+  AWS_REGION: us-east-1
+  TF_VERSION: 1.6.1
+  WORK_DIR_STAGING: environments/Staging/
+  WORK_DIR_PRODUCTION: environments/Production/
+  BUCKET_NAME: terraform-state-techchallenge-equipe7-teste
+
+jobs:
+  Bootstrap:
+    name: Terraform-Init-Staging
+    runs-on: ubuntu-latest
+    environment: Staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION_STAGING }}
+
+      - name: Bootstrap backend if needed
+        run: |
+          set -euo pipefail
+
+          echo "BUCKET_NAME: $BUCKET_NAME"
+          echo "AWS_REGION: $AWS_REGION"
+
+          if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
+            echo "Bucket existente. Pulando bootstrap."
+          else
+            echo "Bucket não existe. Criando backend..."
+            cd bootstrap
+            terraform init
+            terraform apply -auto-approve
+            cd ..
+          fi
+
+  Terraform-Init-Staging:
+    name: Terraform-Init-Staging
+    runs-on: ubuntu-latest
+    environment: Staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform_fmt
+        working-directory: ${{ env.WORK_DIR_STAGING }}
+        run: terraform fmt -check -recursive
+
+      - name: Init
+        working-directory: ${{ env.WORK_DIR_STAGING }}
+        run: terraform init -reconfigure
+
+      - name: Validate
+        working-directory: ${{ env.WORK_DIR_STAGING }}
+        run: terraform validate
+      
+      - name: Plan
+        working-directory: ${{ env.WORK_DIR_STAGING }}
+        env:
+          TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
+        run: |
+          terraform plan -no-color -out=tfplan
+
+  Terraform-Init-Production:
+    name: Terraform-Init-Production
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform_fmt
+        working-directory: ${{ env.WORK_DIR_PRODUCTION }}
+        run: terraform fmt -check -recursive
+
+      - name: Init
+        working-directory: ${{ env.WORK_DIR_PRODUCTION }}
+        run: terraform init -reconfigure
+
+      - name: Validate
+        working-directory: ${{ env.WORK_DIR_PRODUCTION }}
+        run: terraform validate
+      
+      - name: Plan
+        working-directory: ${{ env.WORK_DIR_PRODUCTION }}
+        env:
+          TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
+        run: |
+          terraform plan -no-color -out=tfplan
