@@ -4,7 +4,7 @@
 variable "repository_name" {
   description = "List of ECR repository names"
   type        = list(string)
-  default     = [
+  default = [
     "auth-service",
     "flag-service",
     "targeting-service",

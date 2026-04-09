@@ -58,9 +58,9 @@ variable "rds_password" {
 variable "repository_name" {
   description = "ECR repository names"
   type        = list(string)
-  default     = [
+  default = [
     "auth-service",
-    "flag-service", 
+    "flag-service",
     "targeting-service",
     "evaluation-service",
     "analytics-service"

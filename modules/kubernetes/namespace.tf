@@ -4,7 +4,7 @@
 variable "namespaces_k8s" {
   description = "namespaces Kubernetes"
   type        = set(string)
-  default     = [
+  default = [
     "auth-service",
     "flag-service",
     "targeting-service",
