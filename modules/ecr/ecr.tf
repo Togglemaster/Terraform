@@ -1,4 +1,19 @@
 #============================================
+# ECR Variables
+#============================================
+variable "repository_name" {
+  description = "List of ECR repository names"
+  type        = list(string)
+  default     = [
+    "auth-service",
+    "flag-service",
+    "targeting-service",
+    "evaluation-service",
+    "analytics-service"
+  ]
+}
+
+#============================================
 # ECR module
 #============================================
 module "ecr" {
