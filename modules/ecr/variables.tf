@@ -20,8 +20,8 @@ variable "tags" {
 # ECR Variables
 #============================================
 variable "repository_name" {
-  description = "ECR repository names"
-  type        = list(string)
+  description = "ECR repository name"
+  type        = string
 }
 
 #============================================
