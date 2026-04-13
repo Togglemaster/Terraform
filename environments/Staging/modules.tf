@@ -39,7 +39,6 @@ module "rds" {
   vpc_cidr           = var.cidr_block
   private_subnet_ids = module.vpc.private_subnet_ids
   rds_username       = var.rds_username
-  rds_password       = var.rds_password
 }
 
 module "eks" {
@@ -58,7 +57,7 @@ module "kubernetes" {
   environment            = var.environment
   tags                   = var.tags
   rds_username           = var.rds_username
-  rds_password           = var.rds_password
+  db_passwords           = module.secrets_manager.app_passwords
   sqs_queue_url          = var.sqs_queue_url
   db_auth_endpoint       = var.db_auth_endpoint
   db_flag_endpoint       = var.db_flag_endpoint

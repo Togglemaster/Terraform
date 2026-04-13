@@ -43,8 +43,8 @@ module "rds_postgres" {
 
   db_name  = "togglemaster_${var.environment}"
   username = var.rds_username
-  password = var.rds_password
-  port     = 5432
+  manage_master_user_password = true
+  port                        = 5432
 
   iam_database_authentication_enabled = false
 

@@ -49,12 +49,6 @@ variable "rds_username" {
   default     = "togglemaster"
 }
 
-variable "rds_password" {
-  description = "RDS master password"
-  type        = string
-  sensitive   = true
-}
-
 variable "repository_name" {
   description = "ECR repository names"
   type        = list(string)

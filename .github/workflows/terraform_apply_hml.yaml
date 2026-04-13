@@ -29,13 +29,10 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION_STAGING }}
 
       - name: Apply
         working-directory: ${{ env.WORK_DIR }}
-        env:
-          TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
         run: |
           terraform init -reconfigure
           terraform apply -auto-approve

@@ -40,13 +40,6 @@ variable "private_subnet_ids" {
 #============================================
 # RDS Variables
 #============================================
-#RDS Password
-variable "rds_password" {
-  description = "Master password"
-  type        = string
-  sensitive   = true
-}
-
 variable "rds_username" {
   description = "Master username"
   type        = string

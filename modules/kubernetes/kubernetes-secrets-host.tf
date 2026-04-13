@@ -18,7 +18,7 @@ resource "kubernetes_secret_v1" "auth_db_secret_host" {
 
   #Postgres connection string for auth-service
   data = {
-    DATABASE_URL = "postgres://${var.rds_username}:${var.rds_password}@${var.db_auth_endpoint}/auth_db?sslmode=require"
+    DATABASE_URL = "postgres://${var.rds_username}:${var.db_passwords["auth-service"]}@${var.db_auth_endpoint}/auth_db?sslmode=require"
   }
 
   type = "Opaque"
@@ -39,7 +39,7 @@ resource "kubernetes_secret_v1" "flag_db_secret_host" {
 
   #Postgres connection string for flag-service
   data = {
-    DATABASE_URL = "postgres://${var.rds_username}:${var.rds_password}@${var.db_auth_endpoint}/flag_db?sslmode=require"
+    DATABASE_URL = "postgres://${var.rds_username}:${var.db_passwords["flag-service"]}@${var.db_auth_endpoint}/flag_db?sslmode=require"
   }
 
   type = "Opaque"
@@ -60,7 +60,7 @@ resource "kubernetes_secret_v1" "targeting_db_secret_host" {
 
   #Postgres connection string for targeting-service
   data = {
-    DATABASE_URL = "postgres://${var.rds_username}:${var.rds_password}@${var.db_targeting_endpoint}/targeting_db?sslmode=require"
+    DATABASE_URL = "postgres://${var.rds_username}:${var.db_passwords["targeting-service"]}@${var.db_targeting_endpoint}/targeting_db?sslmode=require"
   }
 
   type = "Opaque"

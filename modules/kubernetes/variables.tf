@@ -25,9 +25,10 @@ variable "rds_username" {
   description = "Username to RDS Postgres"
 }
 
-variable "rds_password" {
-  type        = string
-  description = "Password to RDS Postgres"
+variable "db_passwords" {
+  type        = map(string)
+  description = "Map of service name to database password (from Secrets Manager)"
+  sensitive   = true
 }
 
 variable "db_auth_endpoint" {

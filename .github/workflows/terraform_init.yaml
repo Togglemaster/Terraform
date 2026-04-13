@@ -88,8 +88,6 @@ jobs:
       
       - name: Plan
         working-directory: ${{ env.WORK_DIR_STAGING }}
-        env:
-          TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
         run: |
           terraform plan -no-color -out=tfplan
 
@@ -129,7 +127,5 @@ jobs:
       
       - name: Plan
         working-directory: ${{ env.WORK_DIR_PRODUCTION }}
-        env:
-          TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
         run: |
           terraform plan -no-color -out=tfplan
