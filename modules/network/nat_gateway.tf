@@ -1,12 +1,3 @@
-# Filtra apenas subnets públicas do map já existente
-locals {
-  public_subnets = {
-    for key, subnet in var.subnets :
-    key => subnet
-    if subnet.type == "public"
-  }
-}
-
 #============================================
 # Elastic IP alocate (used by NGW)
 #============================================

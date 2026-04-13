@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  TF_VERSION: 1.6.1
+  TF_VERSION: 1.11.1
   WORK_DIR_STAGING: environments/Staging/
   WORK_DIR_PRODUCTION: environments/Production/
   BUCKET_NAME: terraform-state-techchallenge-equipe7-teste
