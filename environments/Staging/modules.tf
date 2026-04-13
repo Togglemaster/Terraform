@@ -50,6 +50,14 @@ module "eks" {
   public_subnet_ids = module.vpc.public_subnet_ids
 }
 
+module "queue" {
+  source = "../../modules/queue"
+
+  project_name = var.project_name
+  environment  = var.environment
+  tags         = var.tags
+}
+
 module "kubernetes" {
   source = "../../modules/kubernetes"
 
@@ -58,12 +66,12 @@ module "kubernetes" {
   tags                   = var.tags
   rds_username           = var.rds_username
   db_passwords           = module.secrets_manager.app_passwords
-  sqs_queue_url          = var.sqs_queue_url
-  db_auth_endpoint       = var.db_auth_endpoint
-  db_flag_endpoint       = var.db_flag_endpoint
-  db_targeting_endpoint  = var.db_targeting_endpoint
-  evaluation_db_endpoint = var.evaluation_db_endpoint
-  dynamodb_table_name    = var.dynamodb_table_name
+  sqs_queue_url          = module.queue.sqs_queue_url
+  db_auth_endpoint       = module.rds.rds_instance_address
+  db_flag_endpoint       = module.rds.rds_instance_address
+  db_targeting_endpoint  = module.rds.rds_instance_address
+  evaluation_db_endpoint = module.rds.elasticache_endpoint
+  dynamodb_table_name    = module.rds.dynamodb_table_name
 }
 
 module "secrets_manager" {

@@ -33,14 +33,6 @@ variable "tags" {
 }
 
 # =============================================================================
-# VARIÁVEIS DO MÓDULO EKS-CLUSTER
-# =============================================================================
-variable "eks_cluster_name" {
-  description = "EKS cluster name"
-  type        = string
-}
-
-# =============================================================================
 # VARIÁVEIS DO MÓDULO DATABASES
 # =============================================================================
 variable "rds_username" {
@@ -61,35 +53,3 @@ variable "repository_name" {
   ]
 }
 
-# =============================================================================
-# VARIÁVEIS DO MÓDULO KUBERNETES
-# =============================================================================
-variable "sqs_queue_url" {
-  description = "SQS queue URL for analytics"
-  type        = string
-}
-
-variable "db_auth_endpoint" {
-  description = "Auth service endpoint"
-  type        = string
-}
-
-variable "db_flag_endpoint" {
-  description = "Flag service endpoint"
-  type        = string
-}
-
-variable "dynamodb_table_name" {
-  description = "DynamoDB table name for analytics"
-  type        = string
-}
-
-variable "db_targeting_endpoint" {
-  description = "Targeting service database endpoint"
-  type        = string
-}
-
-variable "evaluation_db_endpoint" {
-  description = "Evaluation service database endpoint"
-  type        = string
-}
