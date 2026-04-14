@@ -37,7 +37,7 @@ module "rds" {
   tags               = var.tags
   vpc_id             = module.vpc.vpc_id
   vpc_cidr           = var.cidr_block
-  private_subnet_ids = module.vpc.private_subnet_ids
+  private_subnet_ids = values(module.vpc.private_subnet_ids)
   rds_username       = var.rds_username
 }
 
@@ -81,7 +81,7 @@ module "secrets_manager" {
   project_name          = var.project_name
   environment           = var.environment
   tags                  = var.tags
-  private_subnet_ids    = module.vpc.private_subnet_ids
+  private_subnet_ids    = values(module.vpc.private_subnet_ids)
   rds_security_group_id = module.rds.rds_security_group_id
   rds_address           = module.rds.rds_instance_address
   rds_port              = module.rds.rds_instance_port
