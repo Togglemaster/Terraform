@@ -32,7 +32,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION_STAGING }}
 
       - name: Apply
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ${{ env.WORK_DIR_STAGING }}
         run: |
           terraform init
           terraform apply -auto-approve
