@@ -34,5 +34,5 @@ jobs:
       - name: Apply
         working-directory: ${{ env.WORK_DIR }}
         run: |
-          terraform init -reconfigure
+          terraform init
           terraform apply -auto-approve
