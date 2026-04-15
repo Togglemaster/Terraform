@@ -5,13 +5,11 @@ module "elasticache" {
   source = "terraform-aws-modules/elasticache/aws"
 
   replication_group_id = "${var.project_name}-redis-cluster-${var.environment}"
+  node_type            = "cache.t3.micro"
 
-  # Cluster mode
-  cluster_mode_enabled       = true
-  num_node_groups            = 1
-  replicas_per_node_group    = 2
-  automatic_failover_enabled = true
-  multi_az_enabled           = true
+  # Single-node (sem cluster mode) — adequado para staging
+  cluster_mode_enabled    = false
+  num_cache_clusters      = 1
 
   maintenance_window = "sun:05:00-sun:09:00"
   apply_immediately  = true

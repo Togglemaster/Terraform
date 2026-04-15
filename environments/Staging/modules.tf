@@ -16,6 +16,8 @@ module "ecr" {
   project_name    = var.project_name
   environment     = var.environment
   cluster_name    = module.eks.eks_cluster_name
+
+  depends_on = [module.eks]
 }
 
 module "nodegroup" {

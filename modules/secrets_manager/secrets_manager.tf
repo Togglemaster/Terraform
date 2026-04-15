@@ -19,7 +19,7 @@ resource "aws_secretsmanager_secret" "app_db_secrets" {
 
   name                    = "${var.project_name}/${var.environment}/${each.key}/db-credentials"
   description             = "Credenciais do banco de dados para o serviço ${each.key}"
-  recovery_window_in_days = 7
+  recovery_window_in_days = 0
 
   tags = merge(var.tags, {
     Service = each.key
