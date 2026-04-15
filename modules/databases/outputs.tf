@@ -43,5 +43,5 @@ output "dynamodb_table_name" {
 # ElastiCache Outputs
 #============================================
 output "elasticache_endpoint" {
-  value = module.elasticache.replication_group_configuration_endpoint_address
+  value = module.elasticache.replication_group_primary_endpoint_address
 }

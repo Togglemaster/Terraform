@@ -2,7 +2,7 @@
 # IAM role for ECR access
 #============================================
 resource "aws_iam_role" "ecr_role" {
-  name = "ecr-role-${var.environment}"
+  name = "ecr-role-${var.repository_name}-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -29,7 +29,7 @@ resource "aws_iam_role" "ecr_role" {
 # IAM policy for ECR access
 #============================================
 resource "aws_iam_role_policy" "ecr_policy" {
-  name = "ecr-policy-${var.environment}"
+  name = "ecr-policy-${var.repository_name}-${var.environment}"
   role = aws_iam_role.ecr_role.id
 
   policy = jsonencode({
