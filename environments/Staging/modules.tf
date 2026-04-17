@@ -89,4 +89,8 @@ module "secrets_manager" {
   rds_port              = module.rds.rds_instance_port
   rds_db_name           = module.rds.rds_db_name
   rds_username          = var.rds_username
+
+  redis_url           = "redis://${module.rds.elasticache_endpoint}:6379"
+  sqs_url             = module.queue.sqs_queue_url
+  dynamodb_table_name = module.rds.dynamodb_table_name
 }

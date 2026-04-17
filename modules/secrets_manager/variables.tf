@@ -76,3 +76,26 @@ variable "enable_rotation" {
   description = "Habilita rotação automática de senhas via Lambda"
   default     = false
 }
+
+# =============================================================================
+# EVALUATION SERVICE
+# =============================================================================
+
+variable "redis_url" {
+  type        = string
+  description = "URL de conexão do Redis (ElastiCache)"
+}
+
+variable "sqs_url" {
+  type        = string
+  description = "URL da fila SQS"
+}
+
+# =============================================================================
+# ANALYTICS SERVICE
+# =============================================================================
+
+variable "dynamodb_table_name" {
+  type        = string
+  description = "Nome da tabela DynamoDB do analytics-service"
+}
