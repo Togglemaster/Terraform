@@ -38,6 +38,11 @@ locals {
       aws_key       = "targeting-service/db-credentials"
       target_secret = "targeting-service-db-credentials"
     }
+    targeting_config = {
+      namespace     = "targeting-service"
+      aws_key       = "targeting-service/config"
+      target_secret = "targeting-service-config"
+    }
     evaluation_config = {
       namespace     = "evaluation-service"
       aws_key       = "evaluation-service/config"

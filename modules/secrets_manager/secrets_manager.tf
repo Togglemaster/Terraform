@@ -134,6 +134,18 @@ resource "aws_secretsmanager_secret" "flag_config" {
 }
 
 # ============================================================
+# Targeting service — URLs de dependências (preenchido via pipeline)
+# ============================================================
+
+resource "aws_secretsmanager_secret" "targeting_config" {
+  name                    = "${var.project_name}/${var.environment}/targeting-service/config"
+  description             = "Configurações do targeting-service (preenchido via pipeline)"
+  recovery_window_in_days = 0
+
+  tags = merge(var.tags, { Service = "targeting-service" })
+}
+
+# ============================================================
 # Rotação automática (opcional — requer enable_rotation = true)
 # ============================================================
 
