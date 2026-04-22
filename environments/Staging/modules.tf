@@ -11,11 +11,13 @@ module "ecr" {
   source   = "../../modules/ecr"
   for_each = toset(var.repository_name)
 
-  repository_name = each.key
-  tags            = var.tags
-  project_name    = var.project_name
-  environment     = var.environment
-  cluster_name    = module.eks.eks_cluster_name
+  repository_name   = each.key
+  tags              = var.tags
+  project_name      = var.project_name
+  environment       = var.environment
+  cluster_name      = module.eks.eks_cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider_url = module.eks.oidc_provider_url
 }
 
 module "nodegroup" {

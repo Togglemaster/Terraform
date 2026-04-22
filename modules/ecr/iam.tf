@@ -10,13 +10,13 @@ resource "aws_iam_role" "ecr_role" {
       {
         Effect = "Allow"
         Principal = {
-          Federated = data.aws_iam_openid_connect_provider.oidc.arn
+          Federated = var.oidc_provider_arn
         }
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringLike = {
-            "${replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:*:*"
-            "${replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
+            "${replace(var.oidc_provider_url, "https://", "")}:sub" = "system:serviceaccount:*:*"
+            "${replace(var.oidc_provider_url, "https://", "")}:aud" = "sts.amazonaws.com"
           }
         }
       }

@@ -1,10 +1,6 @@
 #============================================
-# Data sources to get cluster info
+# OIDC provider info is now passed in via variables
+# (oidc_provider_arn / oidc_provider_url) to create an
+# explicit resource-graph dependency on the EKS module
+# instead of relying on a data source lookup.
 #============================================
-data "aws_eks_cluster" "cluster" {
-  name = var.cluster_name
-}
-
-data "aws_iam_openid_connect_provider" "oidc" {
-  url = data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer
-}

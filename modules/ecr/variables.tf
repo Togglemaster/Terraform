@@ -25,10 +25,19 @@ variable "repository_name" {
 }
 
 #============================================
-# EKS Variables
+# EKS / IRSA Variables
 #============================================
-# To provide cluster name for IAM role (access to ECR)
 variable "cluster_name" {
   description = "EKS cluster name"
+  type        = string
+}
+
+variable "oidc_provider_arn" {
+  description = "ARN of the IAM OIDC provider associated with the EKS cluster"
+  type        = string
+}
+
+variable "oidc_provider_url" {
+  description = "URL (issuer) of the IAM OIDC provider associated with the EKS cluster"
   type        = string
 }
