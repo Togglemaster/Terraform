@@ -15,7 +15,7 @@ locals {
   external_secrets = {
     auth_db = {
       namespace     = "auth-service"
-      aws_key       = "auth-service/db-credentials"
+      aws_key       = "shared/db-credentials"
       target_secret = "auth-service-db-credentials"
     }
     auth_config = {
@@ -25,7 +25,7 @@ locals {
     }
     flag_db = {
       namespace     = "flag-service"
-      aws_key       = "flag-service/db-credentials"
+      aws_key       = "shared/db-credentials"
       target_secret = "flag-service-db-credentials"
     }
     flag_config = {
@@ -35,7 +35,7 @@ locals {
     }
     targeting_db = {
       namespace     = "targeting-service"
-      aws_key       = "targeting-service/db-credentials"
+      aws_key       = "shared/db-credentials"
       target_secret = "targeting-service-db-credentials"
     }
     targeting_config = {

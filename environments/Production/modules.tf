@@ -63,16 +63,14 @@ module "queue" {
 module "secrets_manager" {
   source = "../../modules/secrets_manager"
 
-  aws_region            = var.aws_region
-  project_name          = var.project_name
-  environment           = var.environment
-  tags                  = var.tags
-  private_subnet_ids    = values(module.vpc.private_subnet_ids)
-  rds_security_group_id = module.rds.rds_security_group_id
-  rds_address           = module.rds.rds_instance_address
-  rds_port              = module.rds.rds_instance_port
-  rds_db_name           = module.rds.rds_db_name
-  rds_username          = var.rds_username
+  aws_region                 = var.aws_region
+  project_name               = var.project_name
+  environment                = var.environment
+  tags                       = var.tags
+  rds_address                = module.rds.rds_instance_address
+  rds_port                   = module.rds.rds_instance_port
+  rds_db_name                = module.rds.rds_db_name
+  rds_master_user_secret_arn = module.rds.rds_master_user_secret_arn
 
   redis_url           = "redis://${module.rds.elasticache_endpoint}:6379"
   sqs_url             = module.queue.sqs_queue_url

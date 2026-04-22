@@ -4,7 +4,7 @@
 
 variable "aws_region" {
   type        = string
-  description = "AWS region (usado no endpoint da Lambda de rotação)"
+  description = "AWS region"
 }
 
 variable "project_name" {
@@ -42,39 +42,9 @@ variable "rds_db_name" {
   description = "Nome do banco de dados no RDS"
 }
 
-variable "rds_username" {
+variable "rds_master_user_secret_arn" {
   type        = string
-  description = "Usuário do banco de dados (mesmo para todos os serviços)"
-}
-
-# =============================================================================
-# REDE (necessária apenas para a Lambda de rotação)
-# =============================================================================
-
-variable "private_subnet_ids" {
-  type        = list(string)
-  description = "IDs das subnets privadas onde a Lambda de rotação será executada"
-}
-
-variable "rds_security_group_id" {
-  type        = string
-  description = "ID do security group do RDS (atribuído à Lambda de rotação)"
-}
-
-# =============================================================================
-# CONFIGURAÇÃO DOS SECRETS
-# =============================================================================
-
-variable "app_names" {
-  type        = list(string)
-  description = "Serviços que receberão secrets de banco de dados"
-  default     = ["auth-service", "flag-service", "targeting-service"]
-}
-
-variable "enable_rotation" {
-  type        = bool
-  description = "Habilita rotação automática de senhas via Lambda"
-  default     = false
+  description = "ARN do secret gerenciado pelo RDS com username/password do master user"
 }
 
 # =============================================================================

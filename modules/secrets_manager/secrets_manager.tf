@@ -1,42 +1,35 @@
 # ============================================================
-# Geração de senhas aleatórias para cada serviço
+# Credencial compartilhada do Postgres
+# Lê o secret gerenciado pelo RDS (username/password) e combina
+# com host/port/dbname num único secret consumido por todos os
+# serviços que falam com o Postgres.
 # ============================================================
 
-resource "random_password" "app_passwords" {
-  for_each = toset(var.app_names)
-
-  length           = 32
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+data "aws_secretsmanager_secret_version" "rds_master" {
+  secret_id = var.rds_master_user_secret_arn
 }
 
-# ============================================================
-# Secrets Manager - um secret por serviço
-# ============================================================
+locals {
+  rds_master = jsondecode(data.aws_secretsmanager_secret_version.rds_master.secret_string)
+}
 
-resource "aws_secretsmanager_secret" "app_db_secrets" {
-  for_each = toset(var.app_names)
-
-  name                    = "${var.project_name}/${var.environment}/${each.key}/db-credentials"
-  description             = "Credenciais do banco de dados para o serviço ${each.key}"
+resource "aws_secretsmanager_secret" "shared_db_credentials" {
+  name                    = "${var.project_name}/${var.environment}/shared/db-credentials"
+  description             = "Credenciais compartilhadas do Postgres (consumidas por todos os serviços)"
   recovery_window_in_days = 0
 
-  tags = merge(var.tags, {
-    Service = each.key
-  })
+  tags = merge(var.tags, { Service = "shared" })
 }
 
-resource "aws_secretsmanager_secret_version" "app_db_secrets" {
-  for_each = toset(var.app_names)
-
-  secret_id = aws_secretsmanager_secret.app_db_secrets[each.key].id
+resource "aws_secretsmanager_secret_version" "shared_db_credentials" {
+  secret_id = aws_secretsmanager_secret.shared_db_credentials.id
 
   secret_string = jsonencode({
     POSTGRES_HOST     = var.rds_address
     POSTGRES_PORT     = var.rds_port
-    POSTGRES_DB       = replace(each.key, "-service", "_db")
-    POSTGRES_USER     = var.rds_username
-    POSTGRES_PASSWORD = random_password.app_passwords[each.key].result
+    POSTGRES_DB       = var.rds_db_name
+    POSTGRES_USER     = local.rds_master.username
+    POSTGRES_PASSWORD = local.rds_master.password
   })
 }
 
@@ -78,9 +71,9 @@ resource "aws_secretsmanager_secret_version" "analytics_config" {
   secret_id = aws_secretsmanager_secret.analytics_config.id
 
   secret_string = jsonencode({
-    AWS_REGION          = var.aws_region
-    AWS_SQS_URL         = var.sqs_url
-    AWS_DYNAMODB_TABLE  = var.dynamodb_table_name
+    AWS_REGION         = var.aws_region
+    AWS_SQS_URL        = var.sqs_url
+    AWS_DYNAMODB_TABLE = var.dynamodb_table_name
   })
 }
 
@@ -142,21 +135,4 @@ resource "aws_secretsmanager_secret" "targeting_config" {
   recovery_window_in_days = 0
 
   tags = merge(var.tags, { Service = "targeting-service" })
-}
-
-# ============================================================
-# Rotação automática (opcional — requer enable_rotation = true)
-# ============================================================
-
-resource "aws_secretsmanager_secret_rotation" "app_db_secrets" {
-  for_each = var.enable_rotation ? toset(var.app_names) : toset([])
-
-  secret_id           = aws_secretsmanager_secret.app_db_secrets[each.key].id
-  rotation_lambda_arn = aws_serverlessapplicationrepository_cloudformation_stack.rds_rotation[0].outputs["LambdaFunctionArn"]
-
-  rotation_rules {
-    automatically_after_days = 30
-  }
-
-  depends_on = [aws_secretsmanager_secret_version.app_db_secrets]
 }

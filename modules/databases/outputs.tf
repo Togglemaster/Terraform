@@ -31,6 +31,11 @@ output "rds_security_group_id" {
   value       = aws_security_group.rds_security_group.id
 }
 
+output "rds_master_user_secret_arn" {
+  description = "ARN do secret gerenciado pelo RDS com a senha do master user"
+  value       = module.rds_postgres.db_instance_master_user_secret_arn
+}
+
 #============================================
 # DynamoDB Outputs
 #============================================
