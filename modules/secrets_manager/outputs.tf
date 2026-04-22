@@ -47,3 +47,8 @@ output "flag_config_secret_arn" {
   description = "ARN do secret de config do flag-service"
   value       = aws_secretsmanager_secret.flag_config.arn
 }
+
+output "eso_role_arn" {
+  description = "ARN da role IRSA do External Secrets Operator (usar em eks.amazonaws.com/role-arn no ServiceAccount)"
+  value       = aws_iam_role.eso.arn
+}

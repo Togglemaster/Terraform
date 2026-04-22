@@ -15,6 +15,14 @@ output "oidc" {
   value = aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer
 }
 
+output "oidc_provider_arn" {
+  value = aws_iam_openid_connect_provider.eks_oidc.arn
+}
+
+output "oidc_provider_url" {
+  value = aws_iam_openid_connect_provider.eks_oidc.url
+}
+
 # Returns the base64-encoded PEM string — use base64decode() in the consumer
 output "certificate_authority" {
   value = aws_eks_cluster.eks_cluster.certificate_authority[0].data

@@ -99,3 +99,29 @@ variable "dynamodb_table_name" {
   type        = string
   description = "Nome da tabela DynamoDB do analytics-service"
 }
+
+# =============================================================================
+# IRSA — External Secrets Operator
+# =============================================================================
+
+variable "oidc_provider_arn" {
+  type        = string
+  description = "ARN do OIDC provider do cluster EKS (output do módulo eks-cluster)"
+}
+
+variable "oidc_provider_url" {
+  type        = string
+  description = "URL do OIDC provider do cluster EKS (ex: https://oidc.eks.<region>.amazonaws.com/id/XXXX)"
+}
+
+variable "eso_service_account_name" {
+  type        = string
+  description = "Nome do ServiceAccount usado pelo External Secrets Operator"
+  default     = "external-secrets"
+}
+
+variable "eso_service_account_namespace" {
+  type        = string
+  description = "Namespace onde o ServiceAccount do ESO vive"
+  default     = "external-secrets"
+}
