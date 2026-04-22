@@ -27,7 +27,6 @@ resource "aws_secretsmanager_secret_version" "shared_db_credentials" {
   secret_string = jsonencode({
     POSTGRES_HOST     = var.rds_address
     POSTGRES_PORT     = var.rds_port
-    POSTGRES_DB       = var.rds_db_name
     POSTGRES_USER     = local.rds_master.username
     POSTGRES_PASSWORD = local.rds_master.password
   })

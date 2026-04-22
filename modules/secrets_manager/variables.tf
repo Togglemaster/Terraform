@@ -37,11 +37,6 @@ variable "rds_port" {
   description = "Porta do RDS"
 }
 
-variable "rds_db_name" {
-  type        = string
-  description = "Nome do banco de dados no RDS"
-}
-
 variable "rds_master_user_secret_arn" {
   type        = string
   description = "ARN do secret gerenciado pelo RDS com username/password do master user"

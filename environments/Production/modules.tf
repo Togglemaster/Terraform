@@ -69,7 +69,6 @@ module "secrets_manager" {
   tags                       = var.tags
   rds_address                = module.rds.rds_instance_address
   rds_port                   = module.rds.rds_instance_port
-  rds_db_name                = module.rds.rds_db_name
   rds_master_user_secret_arn = module.rds.rds_master_user_secret_arn
 
   redis_url           = "redis://${module.rds.elasticache_endpoint}:6379"
