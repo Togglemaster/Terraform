@@ -4,7 +4,7 @@
 aws_region     = "us-east-1"
 project_name   = "togglemaster"
 environment    = "production"
-cidr_block     = "10.0.0.0/16"
+cidr_block     = "10.1.0.0/16"
 aws_account_id = "654654467270" # Updated to current account
 
 # =============================================================================
@@ -13,6 +13,6 @@ aws_account_id = "654654467270" # Updated to current account
 tags = {
   team        = "DevOps"
   project     = "togglemaster"
-  environment = "Staging"
+  environment = "production"
   managedBy   = "Terraform"
 }

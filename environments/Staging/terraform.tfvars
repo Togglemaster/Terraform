@@ -13,6 +13,6 @@ aws_account_id = "654654467270" # Updated to current account
 tags = {
   team        = "DevOps"
   project     = "togglemaster"
-  environment = "Staging"
+  environment = "staging"
   managedBy   = "Terraform"
 }

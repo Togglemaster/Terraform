@@ -58,22 +58,6 @@ module "queue" {
   tags         = var.tags
 }
 
-module "kubernetes" {
-  source = "../../modules/kubernetes"
-
-  project_name           = var.project_name
-  environment            = var.environment
-  tags                   = var.tags
-  rds_username           = var.rds_username
-  db_passwords           = module.secrets_manager.app_passwords
-  sqs_queue_url          = module.queue.sqs_queue_url
-  db_auth_endpoint       = module.rds.rds_instance_address
-  db_flag_endpoint       = module.rds.rds_instance_address
-  db_targeting_endpoint  = module.rds.rds_instance_address
-  evaluation_db_endpoint = module.rds.elasticache_endpoint
-  dynamodb_table_name    = module.rds.dynamodb_table_name
-}
-
 module "secrets_manager" {
   source = "../../modules/secrets_manager"
 
@@ -87,4 +71,47 @@ module "secrets_manager" {
   rds_port              = module.rds.rds_instance_port
   rds_db_name           = module.rds.rds_db_name
   rds_username          = var.rds_username
+
+  redis_url           = "redis://${module.rds.elasticache_endpoint}:6379"
+  sqs_url             = module.queue.sqs_queue_url
+  dynamodb_table_name = module.rds.dynamodb_table_name
+
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider_url = module.eks.oidc_provider_url
+}
+
+# Instala charts Helm: ESO, ALB Controller, Metrics Server
+module "helm" {
+  source = "../../modules/helm"
+
+  project_name = var.project_name
+  environment  = var.environment
+  tags         = var.tags
+  aws_region   = var.aws_region
+
+  cluster_name      = module.eks.eks_cluster_name
+  vpc_id            = module.vpc.vpc_id
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider_url = module.eks.oidc_provider_url
+
+  eso_role_arn = module.secrets_manager.eso_role_arn
+
+  depends_on = [
+    module.eks,
+    module.nodegroup,
+    module.secrets_manager,
+  ]
+}
+
+# Recursos K8s nativos: namespaces + ClusterSecretStore + ExternalSecrets
+module "kubernetes" {
+  source = "../../modules/kubernetes"
+
+  project_name = var.project_name
+  environment  = var.environment
+  tags         = var.tags
+
+  depends_on = [
+    module.helm,
+  ]
 }
