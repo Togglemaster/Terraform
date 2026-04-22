@@ -32,12 +32,11 @@ resource "aws_secretsmanager_secret_version" "app_db_secrets" {
   secret_id = aws_secretsmanager_secret.app_db_secrets[each.key].id
 
   secret_string = jsonencode({
-    engine   = "postgres"
-    host     = var.rds_address
-    port     = var.rds_port
-    dbname   = var.rds_db_name
-    username = var.rds_username
-    password = random_password.app_passwords[each.key].result
+    POSTGRES_HOST     = var.rds_address
+    POSTGRES_PORT     = var.rds_port
+    POSTGRES_DB       = replace(each.key, "-service", "_db")
+    POSTGRES_USER     = var.rds_username
+    POSTGRES_PASSWORD = random_password.app_passwords[each.key].result
   })
 }
 
