@@ -40,9 +40,4 @@ resource "helm_release" "external_secrets" {
   wait          = true
   wait_for_jobs = true
   timeout       = 600
-
-  # ALB Controller registra um MutatingWebhookConfiguration que intercepta
-  # todo Service criado no cluster. Se o ESO subir antes do ALB ter pods
-  # prontos, o webhook falha com "no endpoints available". Forçamos ordem.
-  depends_on = [helm_release.alb_controller]
 }

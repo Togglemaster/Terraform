@@ -14,34 +14,6 @@ variable "tags" {
   default = {}
 }
 
-variable "aws_region" {
-  type        = string
-  description = "Região AWS (usada pelo ALB Controller)"
-}
-
-#============================================
-# EKS / OIDC (para IRSA)
-#============================================
-variable "cluster_name" {
-  type        = string
-  description = "Nome do cluster EKS (usado pelo ALB Controller)"
-}
-
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID onde o cluster roda (usado pelo ALB Controller)"
-}
-
-variable "oidc_provider_arn" {
-  type        = string
-  description = "ARN do OIDC provider do EKS (para trust policy das roles IRSA)"
-}
-
-variable "oidc_provider_url" {
-  type        = string
-  description = "URL do OIDC provider do EKS (para condições sub/aud das roles IRSA)"
-}
-
 #============================================
 # External Secrets Operator
 #============================================
@@ -69,24 +41,18 @@ variable "eso_chart_version" {
 }
 
 #============================================
-# AWS Load Balancer Controller
+# NGINX Ingress Controller
 #============================================
-variable "alb_namespace" {
+variable "nginx_namespace" {
   type        = string
-  description = "Namespace onde o ALB Controller será instalado"
-  default     = "kube-system"
+  description = "Namespace onde o NGINX Ingress Controller será instalado"
+  default     = "ingress-nginx"
 }
 
-variable "alb_service_account_name" {
+variable "nginx_chart_version" {
   type        = string
-  description = "Nome do ServiceAccount do ALB Controller (deve bater com o trust policy da role IRSA)"
-  default     = "aws-load-balancer-controller"
-}
-
-variable "alb_chart_version" {
-  type        = string
-  description = "Versão do chart aws-load-balancer-controller"
-  default     = "1.9.2"
+  description = "Versão do chart ingress-nginx"
+  default     = "4.11.3"
 }
 
 #============================================

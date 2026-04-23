@@ -68,7 +68,7 @@ module "rds_postgres" {
 
   # Database Deletion Protection
   deletion_protection = false
-  skip_final_snapshot = false
+  skip_final_snapshot = true
 
   tags = merge(
     var.tags,

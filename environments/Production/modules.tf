@@ -79,19 +79,13 @@ module "secrets_manager" {
   oidc_provider_url = module.eks.oidc_provider_url
 }
 
-# Instala charts Helm: ESO, ALB Controller, Metrics Server
+# Instala charts Helm: ESO, NGINX Ingress Controller, Metrics Server
 module "helm" {
   source = "../../modules/helm"
 
   project_name = var.project_name
   environment  = var.environment
   tags         = var.tags
-  aws_region   = var.aws_region
-
-  cluster_name      = module.eks.eks_cluster_name
-  vpc_id            = module.vpc.vpc_id
-  oidc_provider_arn = module.eks.oidc_provider_arn
-  oidc_provider_url = module.eks.oidc_provider_url
 
   eso_role_arn = module.secrets_manager.eso_role_arn
 

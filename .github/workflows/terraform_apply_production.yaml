@@ -2,6 +2,7 @@ name: Terraform Apply Production
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 env:
   AWS_REGION: us-east-1
