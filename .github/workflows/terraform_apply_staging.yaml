@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          repository: Togglemaster/Terraform
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
