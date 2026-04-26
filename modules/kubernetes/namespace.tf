@@ -9,7 +9,8 @@ variable "namespaces_k8s" {
     "flag-service",
     "targeting-service",
     "evaluation-service",
-    "analytics-service"
+    "analytics-service",
+    "argocd"
   ]
 }
 
