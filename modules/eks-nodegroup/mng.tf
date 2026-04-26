@@ -19,9 +19,9 @@ resource "aws_eks_node_group" "eks_manage_node_group" {
 
   # Defining the desired scling config
   scaling_config {
-    desired_size = 2
-    max_size     = 3
-    min_size     = 2
+    desired_size = 3
+    max_size     = 4
+    min_size     = 3
   }
 
   # Defining dependencies with roles to create and delete them without problems
