@@ -89,6 +89,10 @@ module "helm" {
 
   eso_role_arn = module.secrets_manager.eso_role_arn
 
+  aws_region   = var.aws_region
+  cluster_name = module.eks.eks_cluster_name
+  vpc_id       = module.vpc.vpc_id
+
   depends_on = [
     module.eks,
     module.nodegroup,
@@ -103,6 +107,9 @@ module "kubernetes" {
   project_name = var.project_name
   environment  = var.environment
   tags         = var.tags
+
+  aws_region   = var.aws_region
+  cluster_name = module.eks.eks_cluster_name
 
   depends_on = [
     module.helm,

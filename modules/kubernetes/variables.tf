@@ -17,6 +17,16 @@ variable "tags" {
   default     = {}
 }
 
+variable "aws_region" {
+  description = "Região AWS (usada no destroy do namespace argocd para refresh do kubeconfig)"
+  type        = string
+}
+
+variable "cluster_name" {
+  description = "Nome do EKS cluster (usado no destroy do namespace argocd para refresh do kubeconfig)"
+  type        = string
+}
+
 #============================================
 # External Secrets Operator
 #============================================

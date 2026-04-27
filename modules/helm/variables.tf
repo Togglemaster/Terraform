@@ -14,6 +14,21 @@ variable "tags" {
   default = {}
 }
 
+variable "aws_region" {
+  type        = string
+  description = "Região AWS (usada na limpeza do NLB no destroy)"
+}
+
+variable "cluster_name" {
+  type        = string
+  description = "Nome do EKS cluster (usado para refresh do kubeconfig no destroy)"
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID onde o NLB do ingress vive (usado para verificar limpeza no destroy)"
+}
+
 #============================================
 # External Secrets Operator
 #============================================
