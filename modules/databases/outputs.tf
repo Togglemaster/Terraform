@@ -32,8 +32,8 @@ output "rds_security_group_id" {
 }
 
 output "rds_master_user_secret_arn" {
-  description = "ARN do secret gerenciado pelo RDS com a senha do master user"
-  value       = module.rds_postgres.db_instance_master_user_secret_arn
+  description = "ARN do secret com username/password do master user do RDS (gerado via Terraform com chars URL-safe)"
+  value       = aws_secretsmanager_secret.rds_master.arn
 }
 
 #============================================
