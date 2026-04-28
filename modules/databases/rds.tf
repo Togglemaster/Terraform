@@ -71,7 +71,8 @@ resource "aws_secretsmanager_secret_version" "rds_master" {
 # RDS Module
 #============================================
 module "rds_postgres" {
-  source = "terraform-aws-modules/rds/aws"
+  source  = "terraform-aws-modules/rds/aws"
+  version = "~> 6.12"
 
   identifier = "${var.project_name}-rds-${var.environment}"
 
