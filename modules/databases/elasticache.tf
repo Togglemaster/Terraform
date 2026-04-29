@@ -8,8 +8,8 @@ module "elasticache" {
   node_type            = "cache.t3.micro"
 
   # Single-node (sem cluster mode) — adequado para staging
-  cluster_mode_enabled    = false
-  num_cache_clusters      = 1
+  cluster_mode_enabled = false
+  num_cache_clusters   = 1
 
   maintenance_window = "sun:05:00-sun:09:00"
   apply_immediately  = true
