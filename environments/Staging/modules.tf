@@ -72,7 +72,7 @@ module "secrets_manager" {
   rds_username = module.rds.rds_username
   rds_password = module.rds.rds_password
 
-  redis_url           = "redis://${module.rds.elasticache_endpoint}:6379"
+  redis_url           = "rediss://${module.rds.elasticache_endpoint}:6379"
   sqs_url             = module.queue.sqs_queue_url
   dynamodb_table_name = module.rds.dynamodb_table_name
 
