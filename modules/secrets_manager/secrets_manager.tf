@@ -1,17 +1,15 @@
 # ============================================================
 # Credencial compartilhada do Postgres
-# Lê o secret gerenciado pelo RDS (username/password) e combina
-# com host/port/dbname num único secret consumido por todos os
-# serviços que falam com o Postgres.
+# Combina host/port/dbname com username/password (recebidos via variavel
+# direto do modulo databases) num unico secret consumido por todos os
+# servicos que falam com o Postgres.
+#
+# OBS: NAO usar data "aws_secretsmanager_secret_version" aqui. Data
+# sources sao avaliados em refresh; se o secret-fonte ja foi destruido
+# numa execucao anterior (recovery_window_in_days = 0), o proximo
+# plan/destroy quebra com "couldn't find resource". Receber via
+# variavel resolve isso na raiz.
 # ============================================================
-
-data "aws_secretsmanager_secret_version" "rds_master" {
-  secret_id = var.rds_master_user_secret_arn
-}
-
-locals {
-  rds_master = jsondecode(data.aws_secretsmanager_secret_version.rds_master.secret_string)
-}
 
 resource "aws_secretsmanager_secret" "shared_db_credentials" {
   name                    = "${var.project_name}/${var.environment}/shared/db-credentials"
@@ -27,8 +25,8 @@ resource "aws_secretsmanager_secret_version" "shared_db_credentials" {
   secret_string = jsonencode({
     POSTGRES_HOST     = var.rds_address
     POSTGRES_PORT     = var.rds_port
-    POSTGRES_USER     = local.rds_master.username
-    POSTGRES_PASSWORD = local.rds_master.password
+    POSTGRES_USER     = var.rds_username
+    POSTGRES_PASSWORD = var.rds_password
   })
 }
 

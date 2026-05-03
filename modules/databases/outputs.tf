@@ -36,6 +36,17 @@ output "rds_master_user_secret_arn" {
   value       = aws_secretsmanager_secret.rds_master.arn
 }
 
+output "rds_username" {
+  description = "Username do master user do RDS"
+  value       = var.rds_username
+}
+
+output "rds_password" {
+  description = "Password do master user do RDS (gerado via random_password)"
+  value       = random_password.rds_master.result
+  sensitive   = true
+}
+
 #============================================
 # DynamoDB Outputs
 #============================================

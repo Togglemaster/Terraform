@@ -37,9 +37,15 @@ variable "rds_port" {
   description = "Porta do RDS"
 }
 
-variable "rds_master_user_secret_arn" {
+variable "rds_username" {
   type        = string
-  description = "ARN do secret gerenciado pelo RDS com username/password do master user"
+  description = "Username do master user do RDS"
+}
+
+variable "rds_password" {
+  type        = string
+  description = "Password do master user do RDS (vinda do random_password no modulo databases)"
+  sensitive   = true
 }
 
 # =============================================================================

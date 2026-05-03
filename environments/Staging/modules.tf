@@ -63,13 +63,14 @@ module "queue" {
 module "secrets_manager" {
   source = "../../modules/secrets_manager"
 
-  aws_region                 = var.aws_region
-  project_name               = var.project_name
-  environment                = var.environment
-  tags                       = var.tags
-  rds_address                = module.rds.rds_instance_address
-  rds_port                   = module.rds.rds_instance_port
-  rds_master_user_secret_arn = module.rds.rds_master_user_secret_arn
+  aws_region   = var.aws_region
+  project_name = var.project_name
+  environment  = var.environment
+  tags         = var.tags
+  rds_address  = module.rds.rds_instance_address
+  rds_port     = module.rds.rds_instance_port
+  rds_username = module.rds.rds_username
+  rds_password = module.rds.rds_password
 
   redis_url           = "redis://${module.rds.elasticache_endpoint}:6379"
   sqs_url             = module.queue.sqs_queue_url
@@ -107,9 +108,6 @@ module "kubernetes" {
   project_name = var.project_name
   environment  = var.environment
   tags         = var.tags
-
-  aws_region   = var.aws_region
-  cluster_name = module.eks.eks_cluster_name
 
   depends_on = [
     module.helm,
