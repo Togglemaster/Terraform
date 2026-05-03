@@ -98,7 +98,7 @@ resource "kubectl_manifest" "sync_key_job" {
           restartPolicy      = "OnFailure"
           containers = [{
             name  = "orchestrator"
-            image = "bitnami/kubectl:1.32"
+            image = "bitnami/kubectl:latest"
             env = [{
               name = "ADMIN_TOKEN"
               valueFrom = {
