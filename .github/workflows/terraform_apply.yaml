@@ -19,9 +19,7 @@ on:
         description: "Environment to apply Terraform"
         required: true
         type: string
-        options:
-          - staging
-          - production
+        options: [staging, production]
 
 env:
   TF_VERSION: 1.11.1
