@@ -1,0 +1,60 @@
+name: Terraform Apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to apply Terraform"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      confirm:
+        description: "Type the environment name to confirm"
+        required: true
+  workflow_call:
+
+env:
+  TF_VERSION: 1.11.1
+
+jobs:
+  apply:
+    name: Apply ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == github.event.inputs.environment
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set Terraform directory
+        id: vars
+        run: |
+          ENV="${{ github.event.inputs.environment }}"
+          if [ "$ENV" = "staging" ]; then
+            echo "tf_dir=Terraform/environments/Staging" >> "$GITHUB_OUTPUT"
+          else
+            echo "tf_dir=Terraform/environments/Production" >> "$GITHUB_OUTPUT"
+          fi
+          echo "cluster=togglemaster-${ENV}-cluster" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        working-directory: ${{ steps.vars.outputs.tf_dir }}
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: ${{ steps.vars.outputs.tf_dir }}
+        run: terraform apply -auto-approve

@@ -1,0 +1,91 @@
+name: Terraform Apply Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to destroy"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      confirm:
+        description: "Type the environment name to confirm"
+        required: true
+  workflow_call:
+
+env:
+  TF_VERSION: 1.11.1
+
+jobs:
+  destroy:
+    name: Destroy ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == github.event.inputs.environment
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set Terraform directory
+        id: vars
+        run: |
+          ENV="${{ github.event.inputs.environment }}"
+          if [ "$ENV" = "staging" ]; then
+            echo "tf_dir=Terraform/environments/Staging" >> "$GITHUB_OUTPUT"
+          else
+            echo "tf_dir=Terraform/environments/Production" >> "$GITHUB_OUTPUT"
+          fi
+          echo "cluster=togglemaster-${ENV}-cluster" >> "$GITHUB_OUTPUT"
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig \
+            --name ${{ steps.vars.outputs.cluster }} \
+            --region ${{ env.AWS_REGION }} 2>/dev/null || echo "Cluster não encontrado, pulando kubectl setup"
+
+      - name: Limpar pods e finalizers travados
+              run: |
+                NAMESPACES="auth-service flag-service targeting-service evaluation-service analytics-service"
+                for ns in $NAMESPACES; do
+                  echo "=== Processando Namespace: $ns ==="
+                  
+                  # Listando os segredos encontrados (para sabermos o que o xargs vai receber)
+                  echo "Buscando external secrets..."
+                  kubectl get externalsecret -n "$ns" -o name || true
+                  
+                  # Aplicando o patch e mostrando o resultado ou erro na tela
+                  echo "Removendo finalizers..."
+                  kubectl get externalsecret -n "$ns" -o name \
+                    | xargs -I{} kubectl patch {} -n "$ns" \
+                        -p '{"metadata":{"finalizers":[]}}' \
+                        --type=merge || true
+                  
+                  # Forçando a deleção dos pods e mostrando o log de deleção
+                  echo "Forçando deleção dos pods..."
+                  kubectl delete pods --all -n "$ns" --force --grace-period=0 || true
+                  
+                  echo "=== Fim do Namespace: $ns ==="
+                  echo ""
+                done
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        working-directory: ${{ steps.vars.outputs.tf_dir }}
+        run: terraform init
+
+      - name: Terraform Destroy
+        working-directory: ${{ steps.vars.outputs.tf_dir }}
+        run: terraform destroy -auto-approve
