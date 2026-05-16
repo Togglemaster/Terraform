@@ -27,5 +27,8 @@ resource "kubernetes_namespace_v1" "services" {
 
   metadata {
     name = each.value
+    labels = {
+      "admission.datadoghq.com/enabled" = "true"
+    }
   }
 }
