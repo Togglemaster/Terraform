@@ -16,10 +16,9 @@ on:
   workflow_call:
     inputs:
       environment:
-        description: "Environment to apply Terraform"
+        description: "Environment to apply Terraform (Staging or Production)"
         required: true
-        type: choice
-        options: [staging, production]
+        type: string
 
 env:
   TF_VERSION: 1.11.1
@@ -28,9 +27,15 @@ jobs:
   apply:
     name: Apply ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
-    if: github.event.inputs.confirm != github.event.inputs.environment.options[0] && github.event.inputs.confirm != github.event.inputs.environment.options[1]
 
     steps:
+      - name: Validar ambiente selecionado
+        run: |
+          if [ "${{ inputs.environment }}" != "staging" ] && [ "${{ inputs.environment }}" != "production" ]; then
+            echo "ERRO: O ambiente '${{ inputs.environment }}' é inválido. Escolha 'staging' ou 'production'."
+            exit 1
+          fi
+          
       - name: Checkout
         uses: actions/checkout@v4
 
