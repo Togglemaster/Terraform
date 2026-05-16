@@ -18,6 +18,7 @@ on:
       environment:
         description: "Environment to apply Terraform"
         required: true
+        type: string
         options:
           - staging
           - production
