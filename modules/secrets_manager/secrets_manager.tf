@@ -75,6 +75,18 @@ resource "aws_secretsmanager_secret_version" "analytics_config" {
 }
 
 # ============================================================
+# Evaluation service — AWS credentials (preenchidos via pipeline)
+# ============================================================
+
+resource "aws_secretsmanager_secret" "evaluation_credentials" {
+  name                    = "${var.project_name}/${var.environment}/evaluation-service/credentials"
+  description             = "Credenciais AWS do evaluation-service (preenchido via pipeline)"
+  recovery_window_in_days = 0
+
+  tags = merge(var.tags, { Service = "evaluation-service" })
+}
+
+# ============================================================
 # Evaluation service — URLs (preenchidos via pipeline)
 # ============================================================
 

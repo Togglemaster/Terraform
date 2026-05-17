@@ -53,6 +53,11 @@ locals {
       aws_key       = "evaluation-service/urls"
       target_secret = "evaluation-service-urls"
     }
+    evaluation_credentials = {
+      namespace     = "evaluation-service"
+      aws_key       = "evaluation-service/credentials"
+      target_secret = "evaluation-service-credentials"
+    }
     analytics_config = {
       namespace     = "analytics-service"
       aws_key       = "analytics-service/config"
