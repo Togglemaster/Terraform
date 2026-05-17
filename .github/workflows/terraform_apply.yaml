@@ -38,6 +38,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          repository: Togglemaster/Terraform
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -51,9 +53,9 @@ jobs:
         run: |
           ENV="${{ inputs.environment }}"
           if [ "$ENV" = "staging" ]; then
-            echo "tf_dir=Terraform/environments/Staging" >> "$GITHUB_OUTPUT"
+            echo "tf_dir=environments/Staging" >> "$GITHUB_OUTPUT"
           else
-            echo "tf_dir=Terraform/environments/Production" >> "$GITHUB_OUTPUT"
+            echo "tf_dir=environments/Production" >> "$GITHUB_OUTPUT"
           fi
           echo "cluster=togglemaster-${ENV}-cluster" >> "$GITHUB_OUTPUT"
 
