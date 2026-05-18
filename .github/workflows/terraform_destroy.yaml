@@ -46,36 +46,11 @@ jobs:
           fi
           echo "cluster=togglemaster-${ENV}-cluster" >> "$GITHUB_OUTPUT"
 
-      - name: Configure kubectl
+      - name: Configure kubeconfig
         run: |
           aws eks update-kubeconfig \
             --name ${{ steps.vars.outputs.cluster }} \
             --region ${{ env.AWS_REGION }} 2>/dev/null || echo "Cluster não encontrado, pulando kubectl setup"
-
-      - name: Limpar pods e finalizers travados
-              run: |
-                NAMESPACES="auth-service flag-service targeting-service evaluation-service analytics-service"
-                for ns in $NAMESPACES; do
-                  echo "=== Processando Namespace: $ns ==="
-                  
-                  # Listando os segredos encontrados (para sabermos o que o xargs vai receber)
-                  echo "Buscando external secrets..."
-                  kubectl get externalsecret -n "$ns" -o name || true
-                  
-                  # Aplicando o patch e mostrando o resultado ou erro na tela
-                  echo "Removendo finalizers..."
-                  kubectl get externalsecret -n "$ns" -o name \
-                    | xargs -I{} kubectl patch {} -n "$ns" \
-                        -p '{"metadata":{"finalizers":[]}}' \
-                        --type=merge || true
-                  
-                  # Forçando a deleção dos pods e mostrando o log de deleção
-                  echo "Forçando deleção dos pods..."
-                  kubectl delete pods --all -n "$ns" --force --grace-period=0 || true
-                  
-                  echo "=== Fim do Namespace: $ns ==="
-                  echo ""
-                done
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
