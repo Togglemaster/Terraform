@@ -61,6 +61,25 @@ jobs:
         working-directory: ${{ steps.vars.outputs.tf_dir }}
         run: terraform init
 
+      - name: Cleanup Kubernetes Services
+        run: |
+          kubectl delete svc --all -n analytics-service --ignore-not-found=true 2>/dev/null || true
+          kubectl delete svc --all -n flag-service --ignore-not-found=true 2>/dev/null || true
+          kubectl delete svc --all -n notification-service --ignore-not-found=true 2>/dev/null || true
+          kubectl delete svc --all -n decision-service --ignore-not-found=true 2>/dev/null || true
+          kubectl delete svc --all -n user-service --ignore-not-found=true 2>/dev/null || true
+          sleep 30
+
+      - name: Remove Kubernetes Finalizers
+        run: |
+          kubectl patch ns analytics-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
+          kubectl patch ns flag-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
+          kubectl patch ns notification-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
+          kubectl patch ns decision-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
+          kubectl patch ns user-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
+
       - name: Terraform Destroy
         working-directory: ${{ steps.vars.outputs.tf_dir }}
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve -lock=false
+        env:
+          TF_CLI_ARGS: "-var-file=terraform.tfvars -max-retries=5"
