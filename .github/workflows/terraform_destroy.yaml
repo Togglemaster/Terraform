@@ -60,25 +60,56 @@ jobs:
             --name ${{ steps.vars.outputs.cluster }} \
             --region ${{ env.AWS_REGION }}
 
-      - name: Cleanup Kubernetes LoadBalancers
+      - name: Cleanup Kubernetes Resources (Nuclear)
         if: steps.kubeconfig.outcome == 'success'
         continue-on-error: true
         run: |
-          for ns in auth-service flag-service targeting-service evaluation-service analytics-service; do
-            echo "Limpando LoadBalancers no namespace: $ns"
+          NAMESPACES="auth-service flag-service targeting-service evaluation-service analytics-service"
+
+          # 1. Deletar Services (libera LoadBalancers AWS)
+          for ns in $NAMESPACES; do
+            kubectl get ns $ns >/dev/null 2>&1 || continue
+            echo "==> [$ns] Deletando Services..."
             kubectl delete svc --all -n $ns --grace-period=30 --ignore-not-found=true || true
           done
-          echo "Aguardando AWS limpar os LoadBalancers..."
+
+          echo "Aguardando AWS liberar os LoadBalancers (60s)..."
           sleep 60
 
-      - name: Remove Kubernetes Finalizers
-        if: steps.kubeconfig.outcome == 'success'
-        continue-on-error: true
-        run: |
-          for ns in auth-service flag-service targeting-service evaluation-service analytics-service; do
-            echo "Removendo finalizers do namespace: $ns"
-            kubectl patch ns $ns -p '{"metadata":{"finalizers":[]}}' --type=merge || true
+          # 2. Force-delete recursos internos (pods, deployments, statefulsets, pvcs)
+          for ns in $NAMESPACES; do
+            kubectl get ns $ns >/dev/null 2>&1 || continue
+            echo "==> [$ns] Force-deletando workloads..."
+            kubectl delete all --all -n $ns --force --grace-period=0 --ignore-not-found=true || true
+            kubectl delete pvc --all -n $ns --force --grace-period=0 --ignore-not-found=true || true
+            kubectl delete configmap --all -n $ns --ignore-not-found=true || true
+            kubectl delete secret --all -n $ns --ignore-not-found=true || true
           done
+
+          # 3. Remover finalizers de pods presos
+          for ns in $NAMESPACES; do
+            kubectl get ns $ns >/dev/null 2>&1 || continue
+            for pod in $(kubectl get pods -n $ns -o name 2>/dev/null); do
+              echo "==> [$ns] Removendo finalizers de $pod"
+              kubectl patch $pod -n $ns -p '{"metadata":{"finalizers":[]}}' --type=merge || true
+            done
+            for pvc in $(kubectl get pvc -n $ns -o name 2>/dev/null); do
+              echo "==> [$ns] Removendo finalizers de $pvc"
+              kubectl patch $pvc -n $ns -p '{"metadata":{"finalizers":[]}}' --type=merge || true
+            done
+          done
+
+          # 4. Forçar finalização do namespace via API raw (último recurso)
+          for ns in $NAMESPACES; do
+            kubectl get ns $ns >/dev/null 2>&1 || continue
+            echo "==> [$ns] Forçando finalização via API..."
+            kubectl get ns $ns -o json \
+              | jq '.spec.finalizers = [] | .metadata.finalizers = []' \
+              | kubectl replace --raw "/api/v1/namespaces/$ns/finalize" -f - || true
+          done
+
+          sleep 10
+          kubectl get ns 2>/dev/null || echo "Cluster inacessível"
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
