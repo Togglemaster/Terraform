@@ -40,9 +40,9 @@ jobs:
         run: |
           ENV="${{ github.event.inputs.environment }}"
           if [ "$ENV" = "staging" ]; then
-            echo "tf_dir=Terraform/environments/Staging" >> "$GITHUB_OUTPUT"
+            echo "tf_dir=environments/Staging" >> "$GITHUB_OUTPUT"
           else
-            echo "tf_dir=Terraform/environments/Production" >> "$GITHUB_OUTPUT"
+            echo "tf_dir=environments/Production" >> "$GITHUB_OUTPUT"
           fi
           echo "cluster=togglemaster-${ENV}-cluster" >> "$GITHUB_OUTPUT"
 
