@@ -17,6 +17,7 @@ on:
 
 env:
   TF_VERSION: 1.11.1
+  AWS_REGION: us-east-1
 
 jobs:
   destroy:
@@ -33,7 +34,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Set Terraform directory
         id: vars
@@ -46,11 +47,38 @@ jobs:
           fi
           echo "cluster=togglemaster-${ENV}-cluster" >> "$GITHUB_OUTPUT"
 
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
+
       - name: Configure kubeconfig
+        id: kubeconfig
+        continue-on-error: true
         run: |
           aws eks update-kubeconfig \
             --name ${{ steps.vars.outputs.cluster }} \
-            --region ${{ env.AWS_REGION }} 2>/dev/null || echo "Cluster não encontrado, pulando kubectl setup"
+            --region ${{ env.AWS_REGION }}
+
+      - name: Cleanup Kubernetes LoadBalancers
+        if: steps.kubeconfig.outcome == 'success'
+        continue-on-error: true
+        run: |
+          for ns in auth-service flag-service targeting-service evaluation-service analytics-service; do
+            echo "Limpando LoadBalancers no namespace: $ns"
+            kubectl delete svc --all -n $ns --grace-period=30 --ignore-not-found=true || true
+          done
+          echo "Aguardando AWS limpar os LoadBalancers..."
+          sleep 60
+
+      - name: Remove Kubernetes Finalizers
+        if: steps.kubeconfig.outcome == 'success'
+        continue-on-error: true
+        run: |
+          for ns in auth-service flag-service targeting-service evaluation-service analytics-service; do
+            echo "Removendo finalizers do namespace: $ns"
+            kubectl patch ns $ns -p '{"metadata":{"finalizers":[]}}' --type=merge || true
+          done
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -61,25 +89,6 @@ jobs:
         working-directory: ${{ steps.vars.outputs.tf_dir }}
         run: terraform init
 
-      - name: Cleanup Kubernetes Services
-        run: |
-          kubectl delete svc --all -n analytics-service --ignore-not-found=true 2>/dev/null || true
-          kubectl delete svc --all -n flag-service --ignore-not-found=true 2>/dev/null || true
-          kubectl delete svc --all -n notification-service --ignore-not-found=true 2>/dev/null || true
-          kubectl delete svc --all -n decision-service --ignore-not-found=true 2>/dev/null || true
-          kubectl delete svc --all -n user-service --ignore-not-found=true 2>/dev/null || true
-          sleep 30
-
-      - name: Remove Kubernetes Finalizers
-        run: |
-          kubectl patch ns analytics-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
-          kubectl patch ns flag-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
-          kubectl patch ns notification-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
-          kubectl patch ns decision-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
-          kubectl patch ns user-service -p '{"metadata":{"finalizers":[]}}' --type=merge 2>/dev/null || true
-
       - name: Terraform Destroy
         working-directory: ${{ steps.vars.outputs.tf_dir }}
-        run: terraform destroy -auto-approve -lock=false
-        env:
-          TF_CLI_ARGS: "-var-file=terraform.tfvars -max-retries=5"
+        run: terraform destroy -auto-approve
